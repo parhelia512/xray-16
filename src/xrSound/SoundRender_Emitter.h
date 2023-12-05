@@ -36,6 +36,10 @@ public:
 
     CSoundRender_Target* target{};
     CSoundRender_Scene* scene{};
+#ifdef USE_PHONON
+    IPLSource ipl_source{};
+#endif
+
     ref_sound owner_data;
 
     [[nodiscard]]
