@@ -5,7 +5,6 @@
 #include "SoundRender.h"
 #include "SoundRender_Cache.h"
 #include "SoundRender_Environment.h"
-#include "SoundRender_Effects.h"
 #include "SoundRender_Scene.h"
 
 class CSoundRender_Core : public ISoundManager
@@ -54,8 +53,6 @@ protected:
     xr_vector<CSoundRender_Target*> s_targets;
     xr_vector<CSoundRender_Target*> s_targets_defer;
     u32 s_targets_pu; // parameters update
-
-    CSoundRender_Effects* m_effects{};
 
 public:
     bool supports_float_pcm{};
