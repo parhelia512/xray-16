@@ -24,8 +24,8 @@ public:
     u32 m_uGameType;
 
 private:
-    void i_decompress(OggVorbis_File* ovf, char* dest, u32 size) const;
-    void i_decompress(OggVorbis_File* ovf, float* dest, u32 size) const;
+    void i_decompress(OggVorbis_File* ovf, char* dest, u32 size, bool deinterleaved) const;
+    void i_decompress(OggVorbis_File* ovf, float* dest, u32 size, bool deinterleaved) const;
 
     bool LoadWave(pcstr name, bool crashOnError);
 
@@ -35,7 +35,7 @@ public:
 
     bool load(pcstr name, bool replaceWithNoSound = true, bool crashOnError = true);
     void unload();
-    void decompress(u32 line, OggVorbis_File* ovf);
+    void decompress(u32 line, OggVorbis_File* ovf, bool deinterleaved);
 
     [[nodiscard]] float length_sec() const override { return fTimeTotal; }
     [[nodiscard]] u32 game_type() const override { return m_uGameType; }

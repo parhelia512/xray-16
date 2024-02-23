@@ -6,7 +6,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Target.h"
 
-void CSoundRender_Emitter::fill_data(u8* _dest, u32 offset, u32 size)
+void CSoundRender_Emitter::fill_data(u8* _dest, u32 offset, u32 size, bool deinterleaved)
 {
     /*
         Msg				("stream: %10s - %d",*source->fname,size);
@@ -54,7 +54,7 @@ void CSoundRender_Emitter::fill_data(u8* _dest, u32 offset, u32 size)
         // cache access
         if (SoundRender->cache.request(source()->CAT, line))
         {
-            source()->decompress(line, target->get_data());
+            source()->decompress(line, target->get_data(), deinterleaved);
         }
 
         // fill block
@@ -72,7 +72,7 @@ void CSoundRender_Emitter::fill_data(u8* _dest, u32 offset, u32 size)
     }
 }
 
-void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
+void CSoundRender_Emitter::fill_block(void* ptr, u32 size, bool deinterleaved)
 {
     // Msg			("stream: %10s - [%X]:%d, p=%d, t=%d",*source->fname,ptr,size,position,source->dwBytesTotal);
     u8* dest = (u8*)(ptr);
@@ -96,7 +96,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
                 u32 sz_data = dwBytesTotal - get_cursor(true);
                 u32 sz_zero = (get_cursor(true) + size) - dwBytesTotal;
                 VERIFY(size == (sz_data + sz_zero));
-                fill_data(dest, get_cursor(false), sz_data);
+                fill_data(dest, get_cursor(false), sz_data, deinterleaved);
                 memset(dest + sz_data, 0, sz_zero);
             }
             move_cursor(size);
@@ -109,7 +109,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
             {
                 u32 sz_data = dwBytesTotal - get_cursor(true);
                 u32 sz_write = std::min(size - hw_position, sz_data);
-                fill_data(dest + hw_position, get_cursor(true), sz_write);
+                fill_data(dest + hw_position, get_cursor(true), sz_write, deinterleaved);
                 hw_position += sz_write;
                 move_cursor(sz_write);
                 set_cursor(get_cursor(true) % dwBytesTotal);
@@ -134,18 +134,18 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 #ifdef DEBUG
                 Msg("reminder from prev source %d", rem);
 #endif // #ifdef DEBUG
-                fill_data(dest, get_cursor(false), rem);
+                fill_data(dest, get_cursor(false), rem, deinterleaved);
                 move_cursor(rem);
             }
 #ifdef DEBUG
             Msg("recurce from next source %d", size - rem);
 #endif // #ifdef DEBUG
-            fill_block(dest + rem, size - rem);
+            fill_block(dest + rem, size - rem, deinterleaved);
         }
         else
         {
             // Everything OK, just stream
-            fill_data(dest, get_cursor(false), size);
+            fill_data(dest, get_cursor(false), size, deinterleaved);
             move_cursor(size);
         }
     }

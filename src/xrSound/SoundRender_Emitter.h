@@ -36,11 +36,22 @@ public:
 
     CSoundRender_Target* target{};
     CSoundRender_Scene* scene{};
+
 #ifdef USE_PHONON
     IPLSource ipl_source{};
+    IPLAudioSettings ipl_settings{};
+
+    struct
+    {
+        IPLDirectEffect direct{};
+        IPLReflectionEffect reflection{};
+        IPLPathEffect path{};
+    } ipl_effects{};
 #endif
 
     ref_sound owner_data;
+
+    s32 target_buffer_size{};
 
     [[nodiscard]]
     CSoundRender_Source* source() const { return (CSoundRender_Source*)owner_data->handle; }
@@ -108,8 +119,8 @@ public:
     void set_priority(float p) override { priority_scale = p; }
     void set_time(float t) override; //--#SM+#--
     const CSound_params* get_params() override { return &p_source; }
-    void fill_block(void* ptr, u32 size);
-    void fill_data(u8* ptr, u32 offset, u32 size);
+    void fill_block(void* ptr, u32 size, bool deinterleaved);
+    void fill_data(u8* ptr, u32 offset, u32 size, bool deinterleaved);
 
     float priority() const;
     void start(const ref_sound& _owner, u32 flags, float delay);

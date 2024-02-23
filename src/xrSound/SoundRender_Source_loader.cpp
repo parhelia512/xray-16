@@ -31,7 +31,7 @@ long ov_tell_func(void* datasource)
     return static_cast<long>(file->tell());
 }
 
-void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
+void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf, bool deinterleaved)
 {
     VERIFY(ovf);
     // decompression of one cache-line
@@ -48,9 +48,9 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
     // decompress
     const auto dest = SoundRender->cache.get_dataptr(CAT, line);
     if (m_wformat.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
-        i_decompress(ovf, static_cast<float*>(dest), left);
+        i_decompress(ovf, static_cast<float*>(dest), left, deinterleaved);
     else
-        i_decompress(ovf, static_cast<char*>(dest), left);
+        i_decompress(ovf, static_cast<char*>(dest), left, deinterleaved);
 }
 
 bool CSoundRender_Source::LoadWave(pcstr pName, bool crashOnError)

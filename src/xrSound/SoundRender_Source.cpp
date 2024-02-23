@@ -52,8 +52,10 @@ bool ov_can_continue_read(long res)
 }
 }
 
-void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, char* _dest, u32 size) const
+void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, char* _dest, u32 size, bool deinterleaved) const
 {
+    VERIFY2(!deinterleaved, "Deinterleaved 16-bit PCM is not implemented!");
+
     long TotalRet = 0;
 
     // Read loop
@@ -66,7 +68,7 @@ void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, char* _dest, u32 siz
     }
 }
 
-void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, float* _dest, u32 size) const
+void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, float* _dest, u32 size, bool deinterleaved) const
 {
     s32 left = s32(size / m_wformat.nBlockAlign);
     while (left)
@@ -80,9 +82,20 @@ void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, float* _dest, u32 si
         if (samples > left)
             samples = left;
 
-        for (long j = 0; j < samples; j++)
+        if (deinterleaved)
+        {
             for (long i = 0; i < m_wformat.nChannels; i++)
-                *_dest++ = pcm[i][j];
+            {
+                CopyMemory(_dest, pcm[i], sizeof(float) * samples);
+                _dest += samples;
+            }
+        }
+        else
+        {
+            for (long j = 0; j < samples; j++)
+                for (long i = 0; i < m_wformat.nChannels; i++)
+                    *_dest++ = pcm[i][j];
+        }
 
         left -= samples;
     }

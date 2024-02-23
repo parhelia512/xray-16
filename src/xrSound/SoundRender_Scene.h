@@ -13,7 +13,7 @@ public:
 
     void set_handler(sound_event* E) override;
     void set_geometry_som(IReader* I) override;
-    void set_geometry_occ(CDB::MODEL* M) override;
+    void set_geometry_occ(CDB::MODEL* M, const Fbox& aabb) override;
 
     void play(ref_sound& S, IGameObject* O, u32 flags = 0, float delay = 0.f) override;
     void play_at_pos(ref_sound& S, IGameObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f) override;
@@ -40,6 +40,7 @@ public:
 #ifdef USE_PHONON
     IPLScene ipl_scene{};
     IPLStaticMesh ipl_scene_mesh{};
+    IPLProbeBatch ipl_scene_probes{};
     IPLSimulator ipl_simulator{};
 #endif
 
