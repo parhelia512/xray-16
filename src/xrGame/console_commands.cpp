@@ -244,6 +244,12 @@ public:
     }
 };
 
+class CCC_GameLanguageInLTX : public CCC_String
+{
+public:
+    CCC_GameLanguageInLTX(pcstr name) : CCC_String(name, )
+};
+
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command
 {
@@ -2005,6 +2011,7 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "g_crouch_toggle", &psActorFlags, AF_CROUCH_TOGGLE);
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
     CMD1(CCC_GameLanguage, "g_language");
+    CMD3(CCC_String, "g_language_ltx", CStringTable::LanguageIDInLTX, std::size(CStringTable::LanguageIDInLTX));
 
     CMD3(CCC_Mask, "g_backrun", &psActorFlags, AF_RUN_BACKWARD);
 
